@@ -1,1 +1,0 @@
-# analitics_for_thesis

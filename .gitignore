@@ -3,3 +3,6 @@ result_img
 .DS_Store
 index.html
 dat
+batch_*
+collision_*
+retransmission_*

@@ -1,0 +1,15 @@
+distance 30,50,70,90
+numMessages 1
+numRetransmissions 250000
+rtoType 4
+dc 0.5
+duplication 1,10,20,30,50,100
+moleculeType PASSIVE
+adaptive 0
+noise 0
+decomposingType 0
+useCollisions 1
+ack 1
+FEC 0
+numPacket 0
+rateFEC 0

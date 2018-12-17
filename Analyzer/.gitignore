@@ -1,0 +1,5 @@
+/dat/
+/result/
+__pycache__
+.DS_Store
+*.sh

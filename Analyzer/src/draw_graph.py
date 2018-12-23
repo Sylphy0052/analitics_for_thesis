@@ -32,6 +32,8 @@ class Parameter(Enum):
     AdjustNum = 8
     IsFEC = 9
     FEC_Rate = 10
+    PoA = 11 # Passive or Active
+    PacketNum = 12
 
 def draw_rtt(data):
     # RTT fileを読み込んでなかったら
@@ -96,6 +98,11 @@ def draw_two_line_graph(X, Y1, Y2, labels, ax_labels, location, fig_name):
 def draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name):
     for i in range(len(Y)):
         if not len(Y[i]) == len(X):
+            print("not len(Y[i]) == len(X)")
+            # print(X)
+            # print(Y)
+            import sys
+            sys.exit(1)
             continue
         if -1 in Y[i]:
             continue

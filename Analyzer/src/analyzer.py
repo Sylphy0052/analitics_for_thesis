@@ -126,6 +126,55 @@ class Analyzer:
         ax_labels = ["Tx Rx distance (um)", "Failure Rate is over 5"]
         draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
 
+        # ディレクトリ分け
+        params = [Parameter.FEC_Rate, Parameter.PacketNum]
+        for param in params:
+            current_dict = classify_dict_by_param(self.data_dict, param, 1, True)
+
+            for k, v in current_dict.items():
+                data_dict = {}
+                for i in v:
+                    data_dict[i.dat_data.dat_file_name] = i
+
+                # Mean
+                fig_name = dir_path + "{}{}_mean.png".format(param.name, k)
+                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Mean, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
+                location = "best"
+                ax_labels = ["Tx Rx distance (um)", "Mean of RTT (s)"]
+                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
+                # Median
+                fig_name = dir_path + "{}{}_median.png".format(param.name, k)
+                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Median, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
+                # location = "upper left"
+                location = "best"
+                ax_labels = ["Tx Rx distance (um)", "Median of RTT (s)"]
+                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
+                # Jitter
+                fig_name = dir_path + "{}{}_jitter.png".format(param.name, k)
+                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Jitter, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
+                # location = "upper left"
+                location = "best"
+                ax_labels = ["Tx Rx distance (um)", "Jitter of RTT (s)"]
+                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
+                # CollisionNum
+                fig_name = dir_path + "{}{}_numberofcollision.png".format(param.name, k)
+                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.CollisionNum, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
+                # location = "upper left"
+                location = "best"
+                ax_labels = ["Tx Rx distance (um)", "The number of collision"]
+                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
+                # Failure Rate is over 5
+                fig_name = dir_path + "{}{}_failurerate5.png".format(param.name, k)
+                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.FailureRate5, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
+                # location = "upper left"
+                location = "best"
+                ax_labels = ["Tx Rx distance (um)", "Failure Rate is over 5"]
+                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
     def draw_decompoing_graph(self):
         # ディレクトリ作成
         dir_path = "./result_fig/"

@@ -55,6 +55,20 @@ def parse_dat(fname):
             elif key == "outputFile":
                 dat_data.output_file_name = value.rstrip()
 
+            # FEC
+            elif key == "FEC":
+                values = value.rstrip().split(' ')
+                dat_data.fec_packet_num = int(values[1])
+                dat_data.fec_rate = float(values[2])
+
+            # packetStepLengthX
+            elif key == "packetStepLengthX":
+                dat_data.packet_step_length = float(value)
+
+            # packetDiameter
+            elif key == "packetDiameter":
+                dat_data.packet_diameter = float(value)
+
     return dat_data
 
 # RTT file を解析する

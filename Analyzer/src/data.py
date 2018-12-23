@@ -96,6 +96,14 @@ class Data:
                 return self.dat_data.message_num
             elif target_type is Parameter.Decomposing:
                 return self.dat_data.decomposing
+            elif target_type is Parameter.RTO:
+                return True if self.dat_data.rto > 550000 else False
+            elif target_type is Parameter.PoA:
+                return self.dat_data.molecule_type
+            elif target_type is Parameter.FEC_Rate:
+                return self.dat_data.fec_rate
+            elif target_type is Parameter.PacketNum:
+                return self.dat_data.fec_packet_num
             else:
                 print("isinstance in data not defined {}...".format(target_type.name))
                 sys.exit(1)

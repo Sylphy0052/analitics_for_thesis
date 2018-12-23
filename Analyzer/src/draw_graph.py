@@ -85,10 +85,10 @@ def draw_two_line_graph(X, Y1, Y2, labels, ax_labels, location, fig_name):
     plt.grid(True)
     plt.xticks(X)
 
-    if max(X) > 10 ** 6:
+    if max(X) > 10 ** 5:
         plt.gca().xaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
         plt.gca().ticklabel_format(style="sci",  axis="x",scilimits=(0,0))
-    if max(Y1) > 10 ** 6 or max(Y2) > 10 ** 6:
+    if max(Y1) > 10 ** 5 or max(Y2) > 10 ** 5:
         plt.gca().yaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
         plt.gca().ticklabel_format(style="sci",  axis="y",scilimits=(0,0))
 

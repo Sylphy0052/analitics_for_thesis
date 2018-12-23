@@ -57,43 +57,67 @@ class Analyzer:
         for _, data in self.data_dict.items():
             draw_rtt(data)
 
+    def get_ax_labels(self, x_param, y_param):
+        if x_param is Parameter.Distance:
+            x =  "Tx Rx distance (um)"
+        elif x_param is Parameter.Duplication:
+            x = "Duplication level (n)"
+        else:
+            print("Non implementation for x param in get_ax_labels function...")
+            import sys
+            sys.exit(1)
+
+        if y_param is Target.Mean:
+            y = "Mean of RTT (s)"
+        elif y_param is Target.Median:
+            y = "Median of RTT (s)"
+        elif y_param is Target.Jitter:
+            y = "Jitter of RTT (s)"
+        elif y_param is Target.CollisionNum:
+            y = "The number of collision"
+        elif y_param is Target.FailureRate5:
+            y = "Failure Rate is over 5"
+        else:
+            print("Non implementation for y param in get_ax_labels function...")
+            import sys
+            sys.exit(1)
+
+        return [x, y]
+
+    def draw_graph_by_parameter(self, data_dict, x_param, target, label_params, classify_params):
+        for param in classify_params:
+            current_dict = classify_dict_by_param(data_dict, param, 1, True)
+
+            for k, v in current_dict.items():
+                data_dict = {}
+                for i in v:
+                    data_dict[i.dat_data.dat_file_name] = i
+
+                for target in [Target.Mean, Target.Median, Target.Jitter, Target.CollisionNum, Target.FailureRate5]:
+                    fig_name = self.dir_path + "{}{}_{}.png".format(param.name.lower(), k, target.name.lower())
+                    X, Y, labels = classify_dict(data_dict, x_param, target, label_params)
+                    location = "best"
+                    ax_labels = self.get_ax_labels(x_param, target)
+                    draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
+    def draw_graph_for_parameter(self, data_dict, x_param, target, label_params):
+        fig_name = self.dir_path + "{}.png".format(x_param.name.lower())
+        X, Y, labels = classify_dict(data_dict, x_param, target, label_params)
+        location = "best"
+        ax_labels = self.get_ax_labels(x_param, target)
+        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+
     def draw_normal_graph(self):
         # ディレクトリ作成
-        dir_path = "./result_fig/"
-        if not os.path.isdir(dir_path):
-                os.makedirs(dir_path)
+        self.dir_path = "./result_fig/"
+        if not os.path.isdir(self.dir_path):
+                os.makedirs(self.dir_path)
 
-        # Mean
-        fig_name = dir_path + "mean.png"
-        X, Y, labels = classify_dict(self.data_dict, Parameter.Distance, Target.Mean, [Parameter.Duplication])
-        # location = "upper left"
-        location = "best"
-        ax_labels = ["Tx Rx distance (um)", "Mean of RTT (s)"]
-        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+        for target in [Target.Mean, Target.Median, Target.Jitter, Target.CollisionNum, Target.FailureRate5]:
+            self.draw_graph_for_parameter(self.data_dict, Parameter.Distance, target, [Parameter.FEC_Rate, Parameter.PacketNum])
 
-        # Median
-        fig_name = dir_path + "median.png"
-        X, Y, labels = classify_dict(self.data_dict, Parameter.Distance, Target.Median, [Parameter.Duplication])
-        # location = "upper left"
-        location = "best"
-        ax_labels = ["Tx Rx distance (um)", "Median of RTT (s)"]
-        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-        # Jitter
-        fig_name = dir_path + "jitter.png"
-        X, Y, labels = classify_dict(self.data_dict, Parameter.Distance, Target.Jitter, [Parameter.Duplication])
-        # location = "upper left"
-        location = "best"
-        ax_labels = ["Tx Rx distance (um)", "Jitter of RTT (s)"]
-        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-        # CollisionNum
-        fig_name = dir_path + "numberofcollision.png"
-        X, Y, labels = classify_dict(self.data_dict, Parameter.Distance, Target.CollisionNum, [Parameter.Duplication])
-        # location = "upper left"
-        location = "best"
-        ax_labels = ["Tx Rx distance (um)", "The number of collision"]
-        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
+        self.draw_graph_by_parameter(Parameter.Distance, [Parameter.FEC_Rate], [Parameter.PacketNum])
+        self.draw_graph_by_parameter(Parameter.Distance, [Parameter.PacketNum], [Parameter.FEC_Rate])
 
         # Failure Rate
         # fig_name = dir_path + "failurerate.png"
@@ -117,63 +141,6 @@ class Analyzer:
             location = "best"
             ax_labels = ["Steps", "Cumulative Probability(%)"]
             draw_many_line_graph_for_cumprob(X, Y, labels, ax_labels, location, fig_name)
-
-        # Failure Rate is over 5
-        fig_name = dir_path + "failurerate5.png"
-        X, Y, labels = classify_dict(self.data_dict, Parameter.Distance, Target.FailureRate5, [Parameter.Duplication])
-        # location = "upper left"
-        location = "best"
-        ax_labels = ["Tx Rx distance (um)", "Failure Rate is over 5"]
-        draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-        # ディレクトリ分け
-        params = [Parameter.FEC_Rate, Parameter.PacketNum]
-        for param in params:
-            current_dict = classify_dict_by_param(self.data_dict, param, 1, True)
-
-            for k, v in current_dict.items():
-                data_dict = {}
-                for i in v:
-                    data_dict[i.dat_data.dat_file_name] = i
-
-                # Mean
-                fig_name = dir_path + "{}{}_mean.png".format(param.name, k)
-                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Mean, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
-                location = "best"
-                ax_labels = ["Tx Rx distance (um)", "Mean of RTT (s)"]
-                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-                # Median
-                fig_name = dir_path + "{}{}_median.png".format(param.name, k)
-                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Median, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
-                # location = "upper left"
-                location = "best"
-                ax_labels = ["Tx Rx distance (um)", "Median of RTT (s)"]
-                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-                # Jitter
-                fig_name = dir_path + "{}{}_jitter.png".format(param.name, k)
-                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.Jitter, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
-                # location = "upper left"
-                location = "best"
-                ax_labels = ["Tx Rx distance (um)", "Jitter of RTT (s)"]
-                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-                # CollisionNum
-                fig_name = dir_path + "{}{}_numberofcollision.png".format(param.name, k)
-                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.CollisionNum, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
-                # location = "upper left"
-                location = "best"
-                ax_labels = ["Tx Rx distance (um)", "The number of collision"]
-                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
-
-                # Failure Rate is over 5
-                fig_name = dir_path + "{}{}_failurerate5.png".format(param.name, k)
-                X, Y, labels = classify_dict(data_dict, Parameter.Distance, Target.FailureRate5, [ i for i in [Parameter.FEC_Rate, Parameter.PacketNum] if not param == i])
-                # location = "upper left"
-                location = "best"
-                ax_labels = ["Tx Rx distance (um)", "Failure Rate is over 5"]
-                draw_many_line_graph(X, Y, labels, ax_labels, location, fig_name)
 
     def draw_decompoing_graph(self):
         # ディレクトリ作成

@@ -1,9 +1,9 @@
 distance 30,50,70,90
 numMessages 1
 numRetransmissions 250000
-rtoType 4
-dc 0.5
-duplication 1,10,20,30,50,100
+rtoType 2
+dc 0.04,0.09,0.3,0.98,1.0
+duplication 20
 moleculeType PASSIVE
 adaptive 0
 noise 0
